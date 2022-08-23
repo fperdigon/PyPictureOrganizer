@@ -1,6 +1,7 @@
 import glob
 from datetime import datetime
 import os
+import shutil
 
 
 def analyze_un_org_folder(un_org_folder, file_ext='.jpg'):
@@ -57,5 +58,24 @@ def organize(un_org_folder, org_folder):
     [un_org_files_list, un_org_datetime_list] = analyze_un_org_folder(un_org_folder, file_ext='.jpg')
     [org_folders_list, org_datetime_start_list, org_datetime_end_list] = analyze_org_folder(org_folder,
                                                                                             file_ext='.jpg')
-    print('DEBUG')
+
+    for un_org_ind in range(len(un_org_files_list)):
+        # Select the organized folder with smaller range
+        folder_path = []
+        folder_range = []
+        for org_ind in range(len(org_folders_list)):
+            if org_datetime_start_list[org_ind] < un_org_datetime_list[un_org_ind] and \
+                un_org_datetime_list[un_org_ind] < org_datetime_end_list[org_ind]:
+                time_diff = org_datetime_end_list[org_ind] - org_datetime_start_list[org_ind]
+                folder_path.append(org_folders_list[org_ind])
+                folder_range.append(time_diff)
+
+        if len(folder_range) > 0:
+            selected_item = min(folder_range)
+            selected_ind = folder_range.index(selected_item)
+            folder, file = os.path.split(os.path.abspath(un_org_files_list[un_org_ind]))
+            dest_path = os.path.join(folder_path[selected_ind], file)
+            os.replace(un_org_files_list[un_org_ind], dest_path)
+
+            print('DEBUG')
 
