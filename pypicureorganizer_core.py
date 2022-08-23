@@ -1,5 +1,5 @@
 import glob
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import shutil
 
@@ -60,16 +60,25 @@ def organize(un_org_folder, org_folder, extension='.jpg'):
     [org_folders_list, org_datetime_start_list, org_datetime_end_list] = analyze_org_folder(org_folder,
                                                                                             file_ext='.jpg')
     move_list = []
+    t = datetime.strptime("6:00:00", "%H:%M:%S")
+    min_time_delta = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+
     for un_org_ind in range(len(un_org_files_list)):
         # Select the organized folder with smaller range
         folder_path = []
         folder_range = []
         for org_ind in range(len(org_folders_list)):
+            # This if add the files that are between date start and date end
             if org_datetime_start_list[org_ind] < un_org_datetime_list[un_org_ind] and \
                 un_org_datetime_list[un_org_ind] < org_datetime_end_list[org_ind]:
                 time_diff = org_datetime_end_list[org_ind] - org_datetime_start_list[org_ind]
                 folder_path.append(org_folders_list[org_ind])
                 folder_range.append(time_diff)
+            # This if sentence add the files that are min_time_delta (6h) away eom date start and date end
+            elif org_datetime_start_list[org_ind] - un_org_datetime_list[un_org_ind] < min_time_delta or \
+                un_org_datetime_list[un_org_ind] - org_datetime_end_list[org_ind] < min_time_delta:
+                folder_path.append(org_folders_list[org_ind])
+                folder_range.append(min_time_delta)
 
         if len(folder_range) > 0:
             selected_item = min(folder_range)
