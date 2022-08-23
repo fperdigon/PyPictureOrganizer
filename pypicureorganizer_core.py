@@ -54,11 +54,12 @@ def analyze_org_folder(org_folder, file_ext='.jpg'):
     return [org_folders_list, org_datetime_start_list, org_datetime_end_list]
 
 
-def organize(un_org_folder, org_folder):
-    [un_org_files_list, un_org_datetime_list] = analyze_un_org_folder(un_org_folder, file_ext='.jpg')
+def organize(un_org_folder, org_folder, extension='.jpg'):
+    print('Starting Organization ' + extension + ' files')
+    [un_org_files_list, un_org_datetime_list] = analyze_un_org_folder(un_org_folder, file_ext=extension)
     [org_folders_list, org_datetime_start_list, org_datetime_end_list] = analyze_org_folder(org_folder,
                                                                                             file_ext='.jpg')
-
+    move_list = []
     for un_org_ind in range(len(un_org_files_list)):
         # Select the organized folder with smaller range
         folder_path = []
@@ -74,8 +75,16 @@ def organize(un_org_folder, org_folder):
             selected_item = min(folder_range)
             selected_ind = folder_range.index(selected_item)
             folder, file = os.path.split(os.path.abspath(un_org_files_list[un_org_ind]))
+            source_path = un_org_files_list[un_org_ind]
             dest_path = os.path.join(folder_path[selected_ind], file)
-            os.replace(un_org_files_list[un_org_ind], dest_path)
 
-            print('DEBUG')
+            move_list.append([source_path, dest_path])
+
+
+    print(str(len(move_list)) + ' files will be organized!')
+
+    for move in move_list:
+        os.replace(move[0], move[1])
+
+    print('Organization done')
 

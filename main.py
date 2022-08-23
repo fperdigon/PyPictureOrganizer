@@ -4,7 +4,9 @@
 
 import pypicureorganizer_core
 
-un_org_folder = '/media/fco/DATA/Cloud/Fotos_Org/Org 2018/'
+un_org_folder = '/media/fco/DATA/Cloud/Fotos_Org/'
 org_folder = '/media/fco/DATA/Cloud/Fotos/'
 
-pypicureorganizer_core.organize(un_org_folder, org_folder)
+pypicureorganizer_core.organize(un_org_folder, org_folder, extension='.jpg')
+pypicureorganizer_core.organize(un_org_folder, org_folder, extension='.mkv')
+pypicureorganizer_core.organize(un_org_folder, org_folder, extension='.mp4')
