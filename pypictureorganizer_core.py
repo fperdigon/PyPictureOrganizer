@@ -48,8 +48,9 @@ def analyze_org_folder(org_folder, file_ext='.jpg'):
                 org_datetime_start_list.append(date_time_obj)
                 org_datetime_end_list.append(date_time_obj)
         except:
-            print(folder)
-            print(date_time_str)
+            # print(folder)
+            # print(date_time_str)
+            pass
 
     return [org_folders_list, org_datetime_start_list, org_datetime_end_list]
 
@@ -63,7 +64,7 @@ def organize(un_org_folder, org_folder, extension='.jpg'):
     t = datetime.strptime("6:00:00", "%H:%M:%S")
     min_time_delta = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
     t = datetime.strptime("00:00:00", "%H:%M:%S")
-    max_time_delta = timedelta(hours=t.hour, minutes=t.minute, seconds=259200)
+    max_time_delta = timedelta(hours=t.hour, minutes=t.minute, seconds=432000)  # 5d  432000  3d  259200
 
     for un_org_ind in range(len(un_org_files_list)):
         # Select the organized folder with smaller range
@@ -101,7 +102,7 @@ def organize(un_org_folder, org_folder, extension='.jpg'):
     for move in move_list:
         os.replace(move[0], move[1])
 
-    f = open("move_old.txt", "a")
+    f = open("move.txt", "a")
     for move in move_list:
         f.write(str(move) + '\n')
     f.close()
