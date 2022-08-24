@@ -13,7 +13,7 @@ def analyze_un_org_folder(un_org_folder, file_ext='.jpg'):
     for file in un_org_files_list:
         try:
             date_time_str = file.split('/')[-1].split('.')[0].split('IMG_')[-1].split('VID_')[-1].split('_')[0:2]
-            date_time_str = date_time_str[0] + '_' + date_time_str[1]
+            date_time_str = date_time_str[0] + '_' + date_time_str[1][0:6]
             date_time_obj = datetime.strptime(date_time_str, '%Y%m%d_%H%M%S')
             un_org_datetime_list.append(date_time_obj)
             un_org_files_list_final.append(file)
@@ -32,8 +32,8 @@ def analyze_org_folder(org_folder, file_ext='.jpg'):
 
         try:
             folder, _ = os.path.split(os.path.abspath(file))
-            date_time_str = file.split('/')[-1].split('.')[0].split('_')[0:2]
-            date_time_str = date_time_str[0] + '_' + date_time_str[1]
+            date_time_str = file.split('/')[-1].split('.')[0].split('IMG_')[-1].split('VID_')[-1].split('_')[0:2]
+            date_time_str = date_time_str[0] + '_' + date_time_str[1][0:6]
             date_time_obj = datetime.strptime(date_time_str, '%Y%m%d_%H%M%S')
 
             if folder in org_folders_list:
@@ -44,12 +44,12 @@ def analyze_org_folder(org_folder, file_ext='.jpg'):
                     org_datetime_end_list[folder_ind] = date_time_obj
 
             else:
-
                 org_folders_list.append(folder)
                 org_datetime_start_list.append(date_time_obj)
                 org_datetime_end_list.append(date_time_obj)
         except:
-            pass
+            print(folder)
+            print(date_time_str)
 
     return [org_folders_list, org_datetime_start_list, org_datetime_end_list]
 
@@ -101,7 +101,7 @@ def organize(un_org_folder, org_folder, extension='.jpg'):
     for move in move_list:
         os.replace(move[0], move[1])
 
-    f = open("move.txt", "a")
+    f = open("move_old.txt", "a")
     for move in move_list:
         f.write(str(move) + '\n')
     f.close()
