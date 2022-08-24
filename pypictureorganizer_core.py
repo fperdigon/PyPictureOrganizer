@@ -12,7 +12,7 @@ def analyze_un_org_folder(un_org_folder, file_ext='.jpg'):
 
     for file in un_org_files_list:
         try:
-            date_time_str = file.split('/')[-1].split('.')[0].split('_')[0:2]
+            date_time_str = file.split('/')[-1].split('.')[0].split('IMG_')[-1].split('VID_')[-1].split('_')[0:2]
             date_time_str = date_time_str[0] + '_' + date_time_str[1]
             date_time_obj = datetime.strptime(date_time_str, '%Y%m%d_%H%M%S')
             un_org_datetime_list.append(date_time_obj)
@@ -62,6 +62,8 @@ def organize(un_org_folder, org_folder, extension='.jpg'):
     move_list = []
     t = datetime.strptime("6:00:00", "%H:%M:%S")
     min_time_delta = timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+    t = datetime.strptime("00:00:00", "%H:%M:%S")
+    max_time_delta = timedelta(hours=t.hour, minutes=t.minute, seconds=259200)
 
     for un_org_ind in range(len(un_org_files_list)):
         # Select the organized folder with smaller range
@@ -71,14 +73,17 @@ def organize(un_org_folder, org_folder, extension='.jpg'):
             # This if add the files that are between date start and date end
             if org_datetime_start_list[org_ind] < un_org_datetime_list[un_org_ind] and \
                 un_org_datetime_list[un_org_ind] < org_datetime_end_list[org_ind]:
-                time_diff = org_datetime_end_list[org_ind] - org_datetime_start_list[org_ind]
-                folder_path.append(org_folders_list[org_ind])
-                folder_range.append(time_diff)
+                if abs(org_datetime_start_list[org_ind] - org_datetime_end_list[org_ind]) < max_time_delta:
+                    time_diff = org_datetime_end_list[org_ind] - org_datetime_start_list[org_ind]
+                    folder_path.append(org_folders_list[org_ind])
+                    folder_range.append(time_diff)
             # This if sentence add the files that are min_time_delta (6h) away eom date start and date end
-            elif org_datetime_start_list[org_ind] - un_org_datetime_list[un_org_ind] < min_time_delta or \
-                un_org_datetime_list[un_org_ind] - org_datetime_end_list[org_ind] < min_time_delta:
-                folder_path.append(org_folders_list[org_ind])
-                folder_range.append(min_time_delta)
+
+            elif abs(org_datetime_start_list[org_ind] - un_org_datetime_list[un_org_ind]) < min_time_delta or \
+                    abs(un_org_datetime_list[un_org_ind] - org_datetime_end_list[org_ind]) < min_time_delta:
+                if abs(org_datetime_start_list[org_ind] - org_datetime_end_list[org_ind]) < max_time_delta:
+                    folder_path.append(org_folders_list[org_ind])
+                    folder_range.append(min_time_delta)
 
         if len(folder_range) > 0:
             selected_item = min(folder_range)
@@ -92,8 +97,15 @@ def organize(un_org_folder, org_folder, extension='.jpg'):
 
     print(str(len(move_list)) + ' files will be organized!')
 
+
     for move in move_list:
         os.replace(move[0], move[1])
+
+    f = open("move.txt", "a")
+    for move in move_list:
+        f.write(str(move) + '\n')
+    f.close()
+
 
     print('Organization done')
 
